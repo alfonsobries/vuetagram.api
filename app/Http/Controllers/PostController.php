@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Post;
 use Illuminate\Http\Request;
 use App\Http\Requests\PostRequest;
+use Illuminate\Support\Facades\DB;
 
 class PostController extends Controller
 {
@@ -26,7 +27,19 @@ class PostController extends Controller
      */
     public function store(PostRequest $request)
     {
-        return auth()->user()->posts()->create($request->validated());
+        DB::beginTransaction();
+
+        try {
+            $post = auth()->user()->posts()->create($request->validated());
+            $post->photo = $request->photo;
+        } catch (\Exception $e) {
+            DB::rollBack();
+            throw $e;
+        }
+
+        DB::commit();
+
+        return $post;
     }
 
     /**

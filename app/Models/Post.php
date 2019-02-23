@@ -2,13 +2,40 @@
 
 namespace App\Models;
 
+use Illuminate\Http\UploadedFile;
 use Illuminate\Database\Eloquent\Model;
+use Spatie\MediaLibrary\HasMedia\HasMedia;
+use Spatie\MediaLibrary\HasMedia\HasMediaTrait;
 
-class Post extends Model
+class Post extends Model implements HasMedia
 {
+    use HasMediaTrait;
+
     protected $fillable = [
         'caption',
         'latitude',
         'longitude',
     ];
+
+    /**
+     * Register the spatie media library media for this model.
+     */
+    public function registerMediaCollections()
+    {
+        $this
+            ->addMediaCollection('photo')
+            ->singleFile();
+    }
+
+    /**
+     * Stores the photo in the media library
+     *
+     * @param \Illuminate\Http\UploadedFile $photo
+     * @return void
+     */
+    public function setPhotoAttribute(UploadedFile $photo)
+    {
+        $this->addMedia($photo)
+            ->toMediaCollection('photo');
+    }
 }
