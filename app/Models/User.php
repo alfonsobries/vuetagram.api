@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Traits\HasManyPosts;
 use Tymon\JWTAuth\Contracts\JWTSubject;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
@@ -9,7 +10,8 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 
 class User extends Authenticatable implements JWTSubject
 {
-    use Notifiable;
+    use Notifiable,
+        HasManyPosts;
 
     const ROLE_USER = 'user';
     const ROLE_ADMIN = 'admin';
