@@ -5,15 +5,21 @@ namespace App\Models;
 use App\Traits\HasManyPosts;
 use Tymon\JWTAuth\Contracts\JWTSubject;
 use Illuminate\Notifications\Notifiable;
+use Overtrue\LaravelFollow\Traits\CanLike;
+use Overtrue\LaravelFollow\Traits\CanFollow;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Overtrue\LaravelFollow\Traits\CanBeFollowed;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 
 class User extends Authenticatable implements JWTSubject
 {
     use Notifiable,
         HasManyPosts,
-        SoftDeletes;
+        SoftDeletes,
+        CanFollow,
+        CanBeFollowed,
+        CanLike;
 
     const ROLE_USER = 'user';
     const ROLE_ADMIN = 'admin';

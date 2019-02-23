@@ -7,13 +7,15 @@ use Illuminate\Http\UploadedFile;
 use Illuminate\Database\Eloquent\Model;
 use Spatie\MediaLibrary\HasMedia\HasMedia;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Overtrue\LaravelFollow\Traits\CanBeLiked;
 use Spatie\MediaLibrary\HasMedia\HasMediaTrait;
 
 class Post extends Model implements HasMedia
 {
     use HasMediaTrait,
         BelongsToUser,
-        SoftDeletes;
+        SoftDeletes,
+        CanBeLiked;
 
     protected $fillable = [
         'caption',
