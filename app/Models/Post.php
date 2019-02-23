@@ -2,14 +2,18 @@
 
 namespace App\Models;
 
+use App\Traits\BelongsToUser;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Database\Eloquent\Model;
 use Spatie\MediaLibrary\HasMedia\HasMedia;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Spatie\MediaLibrary\HasMedia\HasMediaTrait;
 
 class Post extends Model implements HasMedia
 {
-    use HasMediaTrait;
+    use HasMediaTrait,
+        BelongsToUser,
+        SoftDeletes;
 
     protected $fillable = [
         'caption',

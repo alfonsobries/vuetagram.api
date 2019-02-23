@@ -19,6 +19,7 @@ class CreatePostsTable extends Migration
             $table->string('caption')->nullable();
             $table->string('longitude')->nullable();
             $table->string('latitude')->nullable();
+            $table->softDeletes();
             $table->timestamps();
 
             $table->foreign('user_id')

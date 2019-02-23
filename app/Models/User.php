@@ -5,13 +5,15 @@ namespace App\Models;
 use App\Traits\HasManyPosts;
 use Tymon\JWTAuth\Contracts\JWTSubject;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 
 class User extends Authenticatable implements JWTSubject
 {
     use Notifiable,
-        HasManyPosts;
+        HasManyPosts,
+        SoftDeletes;
 
     const ROLE_USER = 'user';
     const ROLE_ADMIN = 'admin';
@@ -78,5 +80,16 @@ class User extends Authenticatable implements JWTSubject
     public function getJWTCustomClaims()
     {
         return [];
+    }
+
+    /**
+     * If the user owns the model
+     *
+     * @param mixed $model
+     * @return boolean
+     */
+    public function owns($model)
+    {
+        return $model->user_id === $this->id;
     }
 }

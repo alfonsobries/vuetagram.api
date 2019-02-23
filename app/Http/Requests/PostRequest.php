@@ -14,7 +14,9 @@ class PostRequest extends FormRequest
      */
     public function authorize()
     {
-        return $this->user()->can('store', Post::class);
+        return  $this->post
+            ? $this->user()->can('update', $this->post)
+            : $this->user()->can('store', Post::class);
     }
 
     /**

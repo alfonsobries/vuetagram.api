@@ -21,4 +21,28 @@ class PostPolicy
         // Every logged user can publish a post
         return true;
     }
+
+    /**
+     * Determine if the user can update a post
+     *
+     * @param \App\Models\User $user
+     * @param \App\Models\Post $post
+     * @return void
+     */
+    public function update(User $user, Post $post)
+    {
+        return $user->owns($post);
+    }
+
+    /**
+     * Determine if the user can delete a post
+     *
+     * @param \App\Models\User $user
+     * @param \App\Models\Post $post
+     * @return void
+     */
+    public function destroy(User $user, Post $post)
+    {
+        return $user->owns($post);
+    }
 }
