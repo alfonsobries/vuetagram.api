@@ -48,5 +48,5 @@ return [
     /*
      * Namespace of models.
      */
-    'model_namespace' => 'App',
+    'model_namespace' => 'App\Models',
 ];

@@ -11,6 +11,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Overtrue\LaravelFollow\Traits\CanBeFollowed;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use App\Models\User;
 
 class User extends Authenticatable implements JWTSubject
 {
@@ -61,6 +62,8 @@ class User extends Authenticatable implements JWTSubject
      */
     protected $casts = [
         'email_verified_at' => 'datetime',
+        'is_private' => 'boolean',
+        'is_system' => 'boolean',
     ];
 
     /**
@@ -97,5 +100,26 @@ class User extends Authenticatable implements JWTSubject
     public function owns($model)
     {
         return $model->user_id === $this->id;
+    }
+
+    /**
+     * If the user has a public profile
+     *
+     * @return void
+     */
+    public function getIsPublicAttribute()
+    {
+        return $this->is_private === false;
+    }
+
+    /**
+     * Approve the user follower
+     *
+     * @param \App\Models\User $follower
+     * @return void
+     */
+    public function approveFollower(User $follower)
+    {
+        $this->followers()->updateExistingPivot($follower->id, ['approved_at' => now()]);
     }
 }

@@ -11,6 +11,11 @@ Route::group(['middleware' => 'auth:api'], function () {
     Route::patch('settings/password', 'Settings\PasswordController@update');
 
     Route::apiResource('posts', 'PostController');
+
+    Route::group(['prefix' => 'users/{user}'], function () {
+        Route::post('follow', 'User\FollowController@follow')->name('users.follow');
+        Route::post('unfollow', 'User\FollowController@unfollow')->name('users.unfollow');
+    });
 });
 
 Route::group(['middleware' => 'guest:api'], function () {
