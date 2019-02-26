@@ -60,7 +60,7 @@ class Post extends Model implements HasMedia
     }
 
     /**
-     * Posts that belongs to a public users
+     * Posts that should be listed for the user used a param
      *
      * @param \Illuminate\Database\Query\Builder $query
      * @param \App\Models\User $user
@@ -77,6 +77,5 @@ class Post extends Model implements HasMedia
             });
         // Or his own posts
         })->orWhere('user_id', $user->id);
-            
     }
 }
