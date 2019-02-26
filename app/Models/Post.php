@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\User;
 use App\Traits\BelongsToUser;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Database\Eloquent\Model;
@@ -43,5 +44,39 @@ class Post extends Model implements HasMedia
     {
         $this->addMedia($photo)
             ->toMediaCollection('photo');
+    }
+
+    /**
+     * Posts that belongs to a public users
+     *
+     * @param \Illuminate\Database\Query\Builder $query
+     * @return \Illuminate\Database\Query\Builder
+     */
+    public function scopePublic($query)
+    {
+        return $query->whereHas('user', function ($query) {
+            return $query->public();
+        });
+    }
+
+    /**
+     * Posts that belongs to a public users
+     *
+     * @param \Illuminate\Database\Query\Builder $query
+     * @param \App\Models\User $user
+     * @return \Illuminate\Database\Query\Builder
+     */
+    public function scopeFor($query, User $user)
+    {
+        return $query->where(function ($query) use ($user) {
+            // Post from the user his follow (and its approved)
+            $query->whereHas('user', function ($query) use ($user) {
+                return $query->whereHas('followers', function ($query) use ($user) {
+                    return $query->where('user_id', $user->id)->whereNotNull('approved_at');
+                });
+            });
+        // Or his own posts
+        })->orWhere('user_id', $user->id);
+            
     }
 }

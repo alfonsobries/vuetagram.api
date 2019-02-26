@@ -2,6 +2,10 @@
 
 use Illuminate\Http\Request;
 
+
+Route::get('posts', 'PostController@index')->name('posts.index');
+
+
 Route::group(['middleware' => 'auth:api'], function () {
     Route::post('logout', 'Auth\LoginController@logout')->name('logout');
     Route::get('/user', function (Request $request) {
@@ -10,8 +14,10 @@ Route::group(['middleware' => 'auth:api'], function () {
     Route::patch('settings/profile', 'Settings\ProfileController@update');
     Route::patch('settings/password', 'Settings\PasswordController@update');
 
-    Route::apiResource('posts', 'PostController');
-
+    Route::post('posts', 'PostController@store')->name('posts.store');
+    Route::put('posts/{post}', 'PostController@update')->name('posts.update');
+    Route::delete('posts/{post}', 'PostController@destroy')->name('posts.destroy');
+    
     Route::group(['prefix' => 'users/{user}'], function () {
         Route::post('follow', 'User\FollowController@follow')->name('users.follow');
         Route::post('unfollow', 'User\FollowController@unfollow')->name('users.unfollow');

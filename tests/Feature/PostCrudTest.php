@@ -29,7 +29,6 @@ class PostCrudTest extends TestCase
         $post = Post::find($response->json()['id']);
         
         $this->assertEquals($postData['caption'], $post->caption);
-
     
         $this->assertNotNull($post->getFirstMedia('photo'));
     }
@@ -95,6 +94,52 @@ class PostCrudTest extends TestCase
             ->putJson(route('posts.update', $post), $postData)
             ->assertForbidden();
     }
+
+    /** @test */
+    public function a_guest_user_list_latest_public_users_posts()
+    {
+        $postForPublicUsers = factory(Post::class, 5)->state('public_user')->create();
+        $postForPrivateUsers = factory(Post::class, 5)->state('private_user')->create();
+
+        $response = $this->getJson(route('posts.index'))->assertSuccessful();
+
+        $pagination = $response->json();
+
+        $this->assertEquals(5, $pagination['total']);
+        $this->assertEmpty(collect($pagination['data'])->pluck('id')->diff($postForPublicUsers->pluck('id')));
+    }
+
+    /** @test */
+    public function a_loggued_user_list_the_latest_posts_of_the_user_it_follow_and_his_own_posts()
+    {
+        $user = factory(User::class)->create();
+
+        factory(Post::class, 3)->create();
+        
+        // Post that should apper
+        $userPosts = factory(Post::class, 2)->create(['user_id' => $user->id]);
+        $postsToCheck = factory(Post::class, 3)->create();
+        $postsFromUserNotApproved = factory(Post::class, 2)->create();
+        $userPosts2 = factory(Post::class, 1)->create(['user_id' => $user->id]);
+        
+        $postsToCheck->pluck('user')->each->approveFollower($user);
+
+        $postsFromUserNotApproved->pluck('user')->each->follow($user);
+        
+        $allPostsIds = $userPosts->pluck('id')->merge($postsToCheck->pluck('id'))->merge($userPosts2->pluck('id'));
+
+        
+        $response = $this
+        ->actingAs($user)
+        ->getJson(route('posts.index'))
+        ->assertSuccessful();
+        
+        $pagination = $response->json();
+        
+        $this->assertEquals(6, $pagination['total']);
+        $this->assertEmpty(collect($pagination['data'])->pluck('id')->diff($allPostsIds));
+    }
+
 
     private function getPostData($replace = [])
     {

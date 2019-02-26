@@ -118,8 +118,23 @@ class User extends Authenticatable implements JWTSubject
      * @param \App\Models\User $follower
      * @return void
      */
-    public function approveFollower(User $follower)
+    public function approveFollower($follower)
     {
+        if (!$follower->isFollowing($this)) {
+            $follower->follow($this);
+        }
+        
         $this->followers()->updateExistingPivot($follower->id, ['approved_at' => now()]);
+    }
+
+    /**
+     * User with public profiles
+     *
+     * @param \Illuminate\Database\Query\Builder $query
+     * @return \Illuminate\Database\Query\Builder
+     */
+    public function scopePublic($query)
+    {
+        return $query->where('is_private', false);
     }
 }

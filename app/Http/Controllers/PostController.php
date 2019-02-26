@@ -14,9 +14,15 @@ class PostController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        //
+        if (auth()->check()) {
+            $query = Post::for(auth()->user());
+        } else {
+            $query = Post::public();
+        }
+
+        return $query->latest()->paginate(10);
     }
 
     /**
